@@ -1,7 +1,5 @@
 package com.rohail.androidudp.activities
 
-import android.content.Context
-import android.net.wifi.WifiManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
@@ -12,12 +10,30 @@ import com.rohail.androidudp.interfaces.MsgCallback
 import com.rohail.androidudp.interfaces.NetworkIPInterface
 import com.rohail.androidudp.network.Client
 import com.rohail.androidudp.network.Server
-import java.io.IOException
-import java.net.InetAddress
 
 
 class UDPActivity : AppCompatActivity(), View.OnClickListener, MsgCallback, NetworkIPInterface {
 
+    private val sequenceString = arrayOf(
+        "start video1\n" +
+                "    (a 500 ms pause)\n" +
+                "    stop video1\n" +
+                "    start video2\n" +
+                "    (a 1200 ms pause)\n" +
+                "    start fade\n" +
+                "    (a 200 ms pause)\n" +
+                "    stop fade\n" +
+                "    stop video2",
+        "start video2\n" +
+                "    (a 500 ms pause)\n" +
+                "    stop video2\n" +
+                "    start video1\n" +
+                "    (a 1200 ms pause)\n" +
+                "    start fade\n" +
+                "    (a 200 ms pause)\n" +
+                "    stop fade\n" +
+                "    stop video1"
+    )
     private lateinit var client: Client
     private lateinit var server: Server
     private var thread: Thread? = null
@@ -49,38 +65,21 @@ class UDPActivity : AppCompatActivity(), View.OnClickListener, MsgCallback, Netw
         })
 
         thread.start()
-
-//        client = Client(this, this)
-//        var udpServer: UDPServer = UDPServer()
-//        udpServer.start(this)
-    }
-
-    @Throws(IOException::class)
-    fun getBroadcastAddress(): InetAddress {
-        val wifi = this.getApplicationContext().getSystemService(Context.WIFI_SERVICE) as WifiManager
-        val dhcp = wifi.dhcpInfo
-        // handle null somehow
-
-        val broadcast = dhcp.ipAddress and dhcp.netmask or dhcp.netmask.inv()
-        val quads = ByteArray(4)
-        for (k in 0..3)
-            quads[k] = (broadcast shr k * 8 and 0xFF).toByte()
-        return InetAddress.getByAddress(quads)
     }
 
     override fun onClick(v: View?) {
 
         when (v!!.id) {
             btnVideo1.id -> {
-                sendMessage()
+                sendMessage(0)
             }
             btnVideo2.id -> {
-                sendMessage()
+                sendMessage(1)
             }
         }
     }
 
-    private fun sendMessage() {
+    private fun sendMessage(seqNumber: Int) {
         client.stop()
 
         if (thread != null)
@@ -88,7 +87,7 @@ class UDPActivity : AppCompatActivity(), View.OnClickListener, MsgCallback, Netw
 
         thread = Thread(Runnable {
             try {
-                client.sendMessage(getSequence1())
+                client.sendMessage(getSequence(seqNumber))
                 client.run()
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -98,16 +97,8 @@ class UDPActivity : AppCompatActivity(), View.OnClickListener, MsgCallback, Netw
         thread!!.start()
     }
 
-    private fun getSequence1(): String {
-        return "start video1\n" +
-                "    (a 500 ms pause)\n" +
-                "    stop video1\n" +
-                "    start video2\n" +
-                "    (a 1200 ms pause)\n" +
-                "    start fade\n" +
-                "    (a 200 ms pause)\n" +
-                "    stop fade\n" +
-                "    stop video2"
+    private fun getSequence(seqNumber: Int): String {
+        return sequenceString[seqNumber]
     }
 
     override fun onMsgReceived(msg: String) {
