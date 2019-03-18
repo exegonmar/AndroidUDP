@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">AndroidUDP</string>
+
+    <string name="title_activity_ipaddress">IPAddressActivity</string>
+    <string name="go_button">Go</string>
+    <string name="ip_content">IP Address</string>
 </resources>

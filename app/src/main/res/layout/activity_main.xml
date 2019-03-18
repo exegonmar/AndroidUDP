@@ -5,27 +5,83 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".activities.MainActivity">
+        tools:context=".activities.UDPActivity">
 
     <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:gravity="center"
             android:orientation="vertical">
 
-        <TextView
-                android:id="@+id/tvInfoip"
+        <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"/>
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:weightSum="10"
+                android:orientation="horizontal">
 
+            <Button android:id="@+id/btnVideo1"
+                    android:layout_width="200dp"
+                    android:layout_weight="6"
+                    android:text="Video 1"
+                    android:layout_height="wrap_content"/>
+            <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal"
+                    android:ems="3"
+                    android:text="1"
+                    android:id="@+id/etVideo1" android:layout_weight="3"/>
+            <TextView
+                    android:text="ms"
+                    android:layout_width="30dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:weightSum="10"
+                android:orientation="horizontal">
+
+            <Button android:id="@+id/btnVideo2"
+                    android:layout_width="200dp"
+                    android:layout_weight="6"
+                    android:text="Video 2"
+                    android:layout_height="wrap_content"/>
+            <EditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal"
+                    android:ems="3"
+                    android:text="1"
+                    android:id="@+id/etVideo2" android:layout_weight="3"/>
+            <TextView
+                    android:text="ms"
+                    android:layout_width="30dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"/>
+
+
+        </LinearLayout>
         <ScrollView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
+                android:layout_height="match_parent"
+                android:scrollbars = "vertical"
+                android:layout_gravity="center">
             <TextView
-                    android:id="@+id/tvMsg"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_width="match_parent"
+                    android:gravity="center"
+                    android:layout_height="match_parent"
+                    android:id="@+id/tvDetail"/>
         </ScrollView>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
