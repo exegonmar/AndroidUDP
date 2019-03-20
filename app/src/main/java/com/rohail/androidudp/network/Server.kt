@@ -80,8 +80,7 @@ class Server(val context: Context, val msgCallback: MsgCallback, val ipCallback:
                             + msg
                 )
                 msgCallback.onMsgReceived(
-                    packet.address.hostName + ": "
-                            + msg
+                    msg
                 )
 
                 // Reset the length of the packet before reusing it.

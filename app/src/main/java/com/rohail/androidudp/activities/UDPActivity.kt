@@ -6,34 +6,37 @@ import android.text.TextUtils
 import android.text.method.ScrollingMovementMethod
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import com.rohail.androidudp.R
 import com.rohail.androidudp.interfaces.MsgCallback
 import com.rohail.androidudp.interfaces.NetworkIPInterface
 import com.rohail.androidudp.network.Client
 import com.rohail.androidudp.network.Server
 import kotlinx.android.synthetic.main.activity_main.*
 
-
 class UDPActivity : AppCompatActivity(), View.OnClickListener, MsgCallback, NetworkIPInterface {
 
     private var sequenceString1 = arrayOf(
         "start video1\n",
-        "    (a {0} ms pause)\n",
-        "    stop video1\n" +
-                "    start video2\n",
-        "    (a {0} ms pause)\n",
-        "    start fade\n",
-        "    (a {0} ms pause)\n",
-        "    stop fade\n" +
-                "    stop video2"
-        /*"start video2\n" +
-                "    (a {0} ms pause)\n" +
-                "    stop video2\n" +
-                "    start video1\n" +
-                "    (a {0} ms pause)\n" +
-                "    start fade\n" +
-                "    (a {0} ms pause)\n" +
-                "    stop fade\n" +
-                "    stop video1"*/
+        "(a {0} ms pause)\n",
+        "stop video1\n" +
+                "start video2\n",
+        "(a {0} ms pause)\n",
+        "start fade\n",
+        "(a {0} ms pause)\n",
+        "stop fade\n" +
+                "stop video2"
+    )
+
+    private var sequenceString2 = arrayOf(
+        "start video2\n",
+        "a {0} ms pause)\n",
+        "stop video2\n" +
+                "start video1\n",
+        "(a {0} ms pause)\n",
+        "start fade\n",
+        "(a {0} ms pause)\n",
+        "stop fade\n" +
+                "stop video1"
     )
     private lateinit var client: Client
     private lateinit var server: Server
@@ -45,6 +48,16 @@ class UDPActivity : AppCompatActivity(), View.OnClickListener, MsgCallback, Netw
         setContentView(R.layout.activity_main)
 
         var ipExtra: String = intent.getStringExtra("keyIdentifier")
+        var typeExtra: String = intent.getStringExtra("KeyType")
+
+        if (typeExtra.equals("Server")) {
+            btnVideo1.visibility = View.INVISIBLE
+            btnVideo2.visibility = View.INVISIBLE
+            etVideo1.visibility = View.INVISIBLE
+            etVideo2.visibility = View.INVISIBLE
+            tvms1.visibility = View.INVISIBLE
+            tvms2.visibility = View.INVISIBLE
+        }
 
         if (!TextUtils.isEmpty(ipExtra)) {
             strNetworkIP = ipExtra
@@ -103,21 +116,54 @@ class UDPActivity : AppCompatActivity(), View.OnClickListener, MsgCallback, Netw
     }
 
     override fun onMsgReceived(msg: String) {
-        val handler = Handler()
-        val milliseconds: Long = etVideo1.text.toString().toLong()
+        var i: Int = 0
+        var milliseconds: Long
+        var finalMessage: String = ""
+        var sequenceText = arrayOf("")
+        if (msg.equals("0")) {
+            sequenceText = sequenceString1
+            milliseconds = etVideo1.text.toString().toLong()
+        } else {
+            sequenceText = sequenceString2
+            milliseconds = etVideo2.text.toString().toLong()
+        }
 
         runOnUiThread {
             // Stuff that updates the UI
-            for (message in sequenceString1) {
-                if (message.contains("{0}")) {
-                    message = message.replace("{0}", milliseconds.toString())
+            val time = System.currentTimeMillis()
+
+            System.out.println("\n" + sequenceText[i])
+            val wait = time + milliseconds - System.currentTimeMillis()
+            tvDetail.post(Runnable {
+
+                var handler = Handler()
+
+                val runnable = object : Runnable {
+                    override fun run() {
+
+                        if (i < sequenceText.size) {
+                            if (sequenceText[i].contains("{0}")) {
+                                finalMessage =
+                                    tvDetail.text.toString() + sequenceText[i].replace("{0}", milliseconds.toString())
+                            } else {
+                                finalMessage = tvDetail.text.toString() + sequenceText[i]
+                            }
+                            tvDetail.text = finalMessage
+                        }
+
+                        i++
+                        if (i < sequenceText.size)
+                            handler.postDelayed(this, milliseconds)
+                    }
                 }
-                handler.postDelayed(Runnable {
-                    tvDetail.setText(tvDetail.text.toString() + "\n\n\n" + message)
-                }, milliseconds)
-            }
+
+                handler.post(runnable)
+
+
+            })
         }
     }
+
 
     override fun generateIPCallback(ip: String) {
         strNetworkIP = ip

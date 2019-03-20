@@ -41,12 +41,12 @@ class IPAddressActivity : AppCompatActivity() {
      * while interacting with activity UI.
      */
     private val mDelayHideTouchListener = View.OnTouchListener { _, _ ->
-        if (AUTO_HIDE) {
-            delayedHide(AUTO_HIDE_DELAY_MILLIS)
-        }
+//        if (AUTO_HIDE) {
+//            delayedHide(AUTO_HIDE_DELAY_MILLIS)
+//        }
 
         startMainActivity()
-        false
+        true
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,7 +63,7 @@ class IPAddressActivity : AppCompatActivity() {
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
-        dummy_button.setOnTouchListener(mDelayHideTouchListener)
+        dummy_button.setOnClickListener(View.OnClickListener { startMainActivity() })
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
@@ -95,11 +95,13 @@ class IPAddressActivity : AppCompatActivity() {
     }
 
     private fun startMainActivity() {
-        val intent = Intent(this, UDPActivity::class.java)
+        val intentNew = Intent(this, UDPActivity::class.java)
         // To pass any data to next activity
-        intent.putExtra("keyIdentifier", etIP.text.toString())
+        var ipExtra: String = intent.getStringExtra("KeyType")
+        intentNew.putExtra("keyIdentifier", etIP.text.toString())
+        intentNew.putExtra("KeyType", ipExtra)
         // start your next activity
-        startActivity(intent)
+        startActivity(intentNew)
     }
 
     private fun show() {
