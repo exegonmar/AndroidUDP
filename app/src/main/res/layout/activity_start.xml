@@ -16,14 +16,23 @@
                 android:layout_marginLeft="40dp"
                 android:layout_marginRight="40dp"
                 android:background="@android:color/white"
-                android:text="Server"/>
+                android:text="Admin"/>
+
         <Button android:id="@+id/btnClient"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:layout_marginLeft="40dp"
                 android:layout_marginRight="40dp"
                 android:background="@android:color/white"
                 android:layout_marginTop="40dp"
-                android:text="Client"/>
+                android:text="Remote"/>
+
+        <Button android:id="@+id/btnScreen"
+                android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginLeft="40dp"
+                android:layout_marginRight="40dp"
+                android:background="@android:color/white"
+                android:layout_marginTop="40dp"
+                android:text="Screen"/>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
