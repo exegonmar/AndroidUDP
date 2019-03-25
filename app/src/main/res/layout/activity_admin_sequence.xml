@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#0099cc"
+        tools:context=".activities.AdminSequenceActivity">
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent"
+                  android:orientation="vertical">
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="500dp"
+                      android:orientation="horizontal"
+                      android:padding="30dp"
+                      android:background="@android:color/white"
+                      android:weightSum="10">
+
+            <EditText android:layout_width="0dp" android:layout_height="wrap_content"
+                      android:layout_weight="7"
+                      android:maxLines="100"
+                      android:hint="Name"/>
+            <EditText android:layout_width="0dp" android:layout_height="wrap_content"
+                      android:layout_weight="3"
+                      android:hint="ms"/>
+
+        </LinearLayout>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

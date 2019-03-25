@@ -15,6 +15,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_start)
         btnServer.setOnClickListener(View.OnClickListener { startIPActivity("Server") })
         btnClient.setOnClickListener(View.OnClickListener { startIPActivity("Client") })
+        btnScreen.setOnClickListener(View.OnClickListener { startIPActivity("Screen") })
     }
 
     private fun startIPActivity(s: String) {
