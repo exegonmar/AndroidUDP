@@ -13,9 +13,17 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_start)
-        btnServer.setOnClickListener(View.OnClickListener { startIPActivity("Server") })
-        btnClient.setOnClickListener(View.OnClickListener { startIPActivity("Client") })
-        btnScreen.setOnClickListener(View.OnClickListener { startIPActivity("Screen") })
+//        btnServer.setOnClickListener({ startAdminActivity("Server") })
+        btnClient.setOnClickListener({ startAdminActivity("Client") })
+        btnScreen.setOnClickListener({ startIPActivity("Screen") })
+    }
+
+    private fun startAdminActivity(s: String) {
+        val intent = Intent(this, AdminSequenceActivity::class.java)
+        // To pass any data to next activity
+        intent.putExtra("KeyType", s)
+        // start your next activity
+        startActivity(intent)
     }
 
     private fun startIPActivity(s: String) {

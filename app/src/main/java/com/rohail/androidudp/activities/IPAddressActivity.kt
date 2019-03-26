@@ -35,19 +35,6 @@ class IPAddressActivity : AppCompatActivity() {
     }
     private var mVisible: Boolean = false
     private val mHideRunnable = Runnable { hide() }
-    /**
-     * Touch listener to use for in-layout UI controls to delay hiding the
-     * system UI. This is to prevent the jarring behavior of controls going away
-     * while interacting with activity UI.
-     */
-    private val mDelayHideTouchListener = View.OnTouchListener { _, _ ->
-//        if (AUTO_HIDE) {
-//            delayedHide(AUTO_HIDE_DELAY_MILLIS)
-//        }
-
-        startMainActivity()
-        true
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -98,6 +85,7 @@ class IPAddressActivity : AppCompatActivity() {
         val intentNew = Intent(this, UDPActivity::class.java)
         // To pass any data to next activity
         var ipExtra: String = intent.getStringExtra("KeyType")
+        intentNew.putExtras(intent.extras)
         intentNew.putExtra("keyIdentifier", etIP.text.toString())
         intentNew.putExtra("KeyType", ipExtra)
         // start your next activity
