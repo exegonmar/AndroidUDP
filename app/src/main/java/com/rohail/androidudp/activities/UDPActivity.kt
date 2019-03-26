@@ -52,6 +52,11 @@ class UDPActivity : AppCompatActivity(), View.OnClickListener, MsgCallback, Netw
             strNetworkIP = ipExtra
         }
 
+        if (typeExtra.equals("Client")) {
+            llRemote.visibility = View.GONE
+            llMsg.visibility = View.VISIBLE
+        }
+
         btnStart.setOnClickListener(this)
         tvDetail.movementMethod = ScrollingMovementMethod()
 
@@ -67,10 +72,6 @@ class UDPActivity : AppCompatActivity(), View.OnClickListener, MsgCallback, Netw
         })
 
         thread.start()
-
-        if (typeExtra.equals("Client")) {
-            btnStart.visibility = View.INVISIBLE
-        }
     }
 
     private fun parseSequence(sequenceExtra: String) {
@@ -115,16 +116,13 @@ class UDPActivity : AppCompatActivity(), View.OnClickListener, MsgCallback, Netw
     override fun onMsgReceived(msg: String) {
         var i: Int = 0
         var milliseconds: Long
-        var finalMessage: String = ""
-        var sequenceText = arrayOf("")
-        sequenceText = sequenceString
         milliseconds = timeString.toLong()
 
         runOnUiThread {
             // Stuff that updates the UI
             val time = System.currentTimeMillis()
 
-            System.out.println("\n" + sequenceText[i])
+            System.out.println("\n" + sequenceString[i])
             tvDetail.post {
 
                 var handler = Handler()
@@ -132,18 +130,17 @@ class UDPActivity : AppCompatActivity(), View.OnClickListener, MsgCallback, Netw
                 val runnable = object : Runnable {
                     override fun run() {
 
-                        if (i < sequenceText.size) {
-                            if (sequenceText[i].contains("{0}")) {
-                                finalMessage =
-                                    tvDetail.text.toString() + sequenceText[i].replace("{0}", milliseconds.toString())
-                            } else {
-                                finalMessage = tvDetail.text.toString() + sequenceText[i]
+                        if (i < sequenceString.size) {
+
+                            if (typeExtra.equals("Client")) {
+                                tvMsg.text = sequenceString[i]
+                            }else {
+                                tvDetail.text = sequenceString[i]
                             }
-                            tvDetail.text = finalMessage
                         }
 
                         i++
-                        if (i < sequenceText.size)
+                        if (i < sequenceString.size)
                             handler.postDelayed(this, milliseconds)
                     }
                 }
@@ -158,9 +155,9 @@ class UDPActivity : AppCompatActivity(), View.OnClickListener, MsgCallback, Netw
     override fun generateIPCallback(ip: String) {
         strNetworkIP = ip
         client = Client(this, this, strNetworkIP)
-        if (typeExtra.equals("Client")) {
+        /*if (typeExtra.equals("Client")) {
             this.sendMessage(sequenceExtra)
-        }
+        }*/
     }
 
     override fun onBackPressed() {
