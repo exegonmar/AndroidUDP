@@ -43,7 +43,7 @@ class Client(
     }
 
     override fun run() {
-        running.set(true);
+        running.set(true)
         try {
             val host = strNetworkIP
 

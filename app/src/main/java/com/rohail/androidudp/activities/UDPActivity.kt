@@ -52,7 +52,7 @@ class UDPActivity : AppCompatActivity(), View.OnClickListener, MsgCallback, Netw
             strNetworkIP = ipExtra
         }
 
-        if (typeExtra.equals("Client")) {
+        if (typeExtra.equals("Screen")) {
             llRemote.visibility = View.GONE
             llMsg.visibility = View.VISIBLE
         }
@@ -133,9 +133,9 @@ class UDPActivity : AppCompatActivity(), View.OnClickListener, MsgCallback, Netw
                         if (i < sequenceString.size) {
 
                             if (typeExtra.equals("Client")) {
-                                tvMsg.text = sequenceString[i]
-                            }else {
                                 tvDetail.text = sequenceString[i]
+                            }else {
+                                tvMsg.text = sequenceString[i]
                             }
                         }
 
@@ -146,8 +146,6 @@ class UDPActivity : AppCompatActivity(), View.OnClickListener, MsgCallback, Netw
                 }
 
                 handler.post(runnable)
-
-
             }
         }
     }
@@ -155,6 +153,7 @@ class UDPActivity : AppCompatActivity(), View.OnClickListener, MsgCallback, Netw
     override fun generateIPCallback(ip: String) {
         strNetworkIP = ip
         client = Client(this, this, strNetworkIP)
+        client.run()
         /*if (typeExtra.equals("Client")) {
             this.sendMessage(sequenceExtra)
         }*/
