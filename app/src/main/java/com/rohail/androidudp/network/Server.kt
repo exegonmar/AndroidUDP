@@ -16,7 +16,7 @@ class Server(val context: Context, val msgCallback: MsgCallback, val ipCallback:
     private var worker: Thread? = null
     private val running = AtomicBoolean(false)
     private var interval: Int = 0
-    private val port = 58452
+    private val port = 7776
     var strNetworkIP = ""
 
     fun setIP(ip: String) {
@@ -58,7 +58,9 @@ class Server(val context: Context, val msgCallback: MsgCallback, val ipCallback:
         ipCallback.generateIPCallback(strNetworkIP)
         try {
             // Create a socket to listen on the port.
-            val dsocket = DatagramSocket(port)
+            val address = InetAddress.getByName(strNetworkIP)
+
+            val dsocket = DatagramSocket(port, address)
 
             // Create a buffer to read datagrams into. If a
             // packet is larger than this buffer, the

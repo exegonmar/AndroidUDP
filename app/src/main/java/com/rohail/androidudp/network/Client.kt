@@ -16,7 +16,7 @@ class Client(
     private var worker: Thread? = Thread(this)
     private val running = AtomicBoolean(false)
     private var interval: Int = 0
-    private val port = 58452
+    private val port = 7776
     var strNetworkIP = strNetworkIP
 
     fun setIP(ip: String) {

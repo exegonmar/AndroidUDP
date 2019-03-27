@@ -22,7 +22,7 @@ class AdminSequenceActivity : AppCompatActivity() {
                     "stop fade\n" +
                     "stop video2"
         )
-        etMS.setText("300")
+        etMS.setText("1000")
         btnSave.setOnClickListener({ startAdminActivity(intent.getStringExtra("KeyType")) })
     }
 

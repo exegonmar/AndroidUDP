@@ -8,6 +8,8 @@ import android.text.method.ScrollingMovementMethod
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.os.postDelayed
 import com.rohail.androidudp.BuildConfig
 import com.rohail.androidudp.R
 import com.rohail.androidudp.interfaces.MsgCallback
@@ -21,8 +23,8 @@ class UDPActivity : AppCompatActivity(), View.OnClickListener, MsgCallback, Netw
     private var sequenceString = arrayOf("")
     private var timeString: String = ""
 
-    private lateinit var client: Client
-    private lateinit var server: Server
+    private var client: Client? = null
+    private var server: Server? = null
     private var thread: Thread? = null
     private var strNetworkIP = "0.0.0.0"
 
@@ -63,8 +65,8 @@ class UDPActivity : AppCompatActivity(), View.OnClickListener, MsgCallback, Netw
         val thread = Thread(Runnable {
             try {
                 server = Server(this, this, this)
-                server.setIP(strNetworkIP)
-                server.start()
+                server!!.setIP(strNetworkIP)
+                server!!.start()
 
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -96,15 +98,15 @@ class UDPActivity : AppCompatActivity(), View.OnClickListener, MsgCallback, Netw
 
     private fun sendMessage(seq: String) {
         if (client != null)
-            client.stop()
+            client!!.stop()
 
         if (thread != null)
             thread!!.interrupt()
 
         thread = Thread(Runnable {
             try {
-                client.sendMessage(seq)
-                client.run()
+                client!!.sendMessage(seq)
+                client!!.run()
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -134,14 +136,39 @@ class UDPActivity : AppCompatActivity(), View.OnClickListener, MsgCallback, Netw
 
                             if (typeExtra.equals("Client")) {
                                 tvDetail.text = sequenceString[i]
-                            }else {
+                            } else {
                                 tvMsg.text = sequenceString[i]
+                                if (sequenceString[i].toLowerCase().contains("start")) {
+                                    llMsg.setBackgroundColor(ContextCompat.getColor(this@UDPActivity, R.color.blue))
+                                } else if (sequenceString[i].toLowerCase().contains("stop")) {
+                                    llMsg.setBackgroundColor(
+                                        ContextCompat.getColor(
+                                            this@UDPActivity,
+                                            R.color.colorAccent
+                                        )
+                                    )
+                                } else if (sequenceString[i].toLowerCase().contains("fade")) {
+                                    llMsg.setBackgroundColor(
+                                        ContextCompat.getColor(
+                                            this@UDPActivity,
+                                            R.color.black_overlay
+                                        )
+                                    )
+                                } else {
+                                    llMsg.setBackgroundColor(
+                                        ContextCompat.getColor(
+                                            this@UDPActivity,
+                                            R.color.colorPrimary
+                                        )
+                                    )
+                                }
                             }
                         }
 
                         i++
-                        if (i < sequenceString.size)
+                        if (i < sequenceString.size) {
                             handler.postDelayed(this, milliseconds)
+                        }
                     }
                 }
 
@@ -152,16 +179,18 @@ class UDPActivity : AppCompatActivity(), View.OnClickListener, MsgCallback, Netw
 
     override fun generateIPCallback(ip: String) {
         strNetworkIP = ip
-        client = Client(this, this, strNetworkIP)
-        client.run()
+        if (!typeExtra.equals("Screen")) {
+            client = Client(this, this, strNetworkIP)
+        }
         /*if (typeExtra.equals("Client")) {
             this.sendMessage(sequenceExtra)
         }*/
     }
 
     override fun onBackPressed() {
-        this.server.stop()
-        this.client.stop()
+        this.server!!.stop()
+        if (this.client!=null)
+        this.client!!.stop()
         super.onBackPressed()
     }
 
