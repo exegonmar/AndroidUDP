@@ -106,7 +106,7 @@ class UDPActivity : AppCompatActivity(), View.OnClickListener, MsgCallback, Netw
         thread = Thread(Runnable {
             try {
                 client!!.sendMessage(seq)
-                client!!.run()
+                client!!.start()
             } catch (e: Exception) {
                 e.printStackTrace()
             }

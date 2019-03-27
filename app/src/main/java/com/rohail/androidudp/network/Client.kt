@@ -6,6 +6,8 @@ import java.net.DatagramPacket
 import java.net.DatagramSocket
 import java.net.InetAddress
 import java.util.concurrent.atomic.AtomicBoolean
+import android.net.wifi.WifiManager
+
 
 class Client(
     val context: Context,
@@ -59,9 +61,16 @@ class Client(
             )
 
             // Create a datagram socket, send the packet through it, close it.
+            val wifi = context.getSystemService(Context.WIFI_SERVICE) as WifiManager
+            val lock = wifi.createMulticastLock("lock")
+            lock.acquire()
+
             val dsocket = DatagramSocket()
             dsocket.send(packet)
             dsocket.close()
+
+            lock.release()
+
             println("Sent")
         } catch (e: Exception) {
             System.err.println(e)
