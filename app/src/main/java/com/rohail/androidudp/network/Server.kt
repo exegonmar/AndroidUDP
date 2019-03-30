@@ -11,13 +11,11 @@ import java.net.DatagramSocket
 import java.net.InetAddress
 import java.util.concurrent.atomic.AtomicBoolean
 
-class Server(val context: Context, val msgCallback: MsgCallback, val ipCallback: NetworkIPInterface) : Runnable {
+class Server(val context: Context, val msgCallback: MsgCallback, val ipCallback: NetworkIPInterface) {
 
-    private var worker: Thread? = null
-    private val running = AtomicBoolean(false)
-    private var interval: Int = 0
-    private val port = 7776
-    var strNetworkIP = ""
+    private val port = 58452
+    private var strNetworkIP = ""
+    private var dsocket: DatagramSocket? = null
 
     fun setIP(ip: String) {
         this.strNetworkIP = ip
@@ -36,22 +34,11 @@ class Server(val context: Context, val msgCallback: MsgCallback, val ipCallback:
         return InetAddress.getByAddress(quads)
     }
 
-    fun ControlSubThread(sleepInterval: Int) {
-        interval = sleepInterval
+    fun stop() {
+        dsocket!!.close()
     }
 
     fun start() {
-        worker = Thread(this)
-        worker!!.start()
-    }
-
-    fun stop() {
-        running.set(false)
-        worker!!.interrupt()
-    }
-
-    override fun run() {
-        running.set(true)
         if (TextUtils.isEmpty(strNetworkIP)) {
             strNetworkIP = getBroadcastAddress().hostAddress
         }
@@ -60,20 +47,23 @@ class Server(val context: Context, val msgCallback: MsgCallback, val ipCallback:
             // Create a socket to listen on the port.
             val address = InetAddress.getByName(strNetworkIP)
 
-            val dsocket = DatagramSocket(port, address)
-
-            // Create a buffer to read datagrams into. If a
-            // packet is larger than this buffer, the
-            // excess will simply be discarded!
-            val buffer = ByteArray(2048)
-
-            // Create a packet to receive data into the buffer
-            val packet = DatagramPacket(buffer, buffer.size)
+            if (dsocket == null || dsocket!!.isClosed()) {
+                dsocket = DatagramSocket(port, address)
+                dsocket!!.broadcast = true
+            }
 
             // Now loop forever, waiting to receive packets and printing them.
             while (true) {
+                // Create a buffer to read datagrams into. If a
+                // packet is larger than this buffer, the
+                // excess will simply be discarded!
+                val buffer = ByteArray(4096)
+
+                // Create a packet to receive data into the buffer
+                val packet = DatagramPacket(buffer, buffer.size)
+
                 // Wait to receive a datagram
-                dsocket.receive(packet)
+                dsocket!!.receive(packet)
 
                 // Convert the contents to a string, and display them
                 val msg = String(buffer, 0, packet.length)

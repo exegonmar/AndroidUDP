@@ -11,15 +11,12 @@ import android.net.wifi.WifiManager
 
 class Client(
     val context: Context,
-    val msgCallback: MsgCallback,
     strNetworkIP: String
-) : Runnable {
+) {
 
-    private var worker: Thread? = Thread(this)
-    private val running = AtomicBoolean(false)
-    private var interval: Int = 0
-    private val port = 7776
-    var strNetworkIP = strNetworkIP
+    private val port = 58452
+    private var strNetworkIP = strNetworkIP
+    private var dsocket: DatagramSocket? = null
 
     fun setIP(ip: String) {
         this.strNetworkIP = ip
@@ -31,28 +28,16 @@ class Client(
         this.msgString = msg
     }
 
-    fun ControlSubThread(sleepInterval: Int) {
-        interval = sleepInterval
+    fun stop() {
+        dsocket!!.close()
     }
 
     fun start() {
-        worker!!.start()
-    }
-
-    fun stop() {
-        running.set(false)
-        worker!!.interrupt()
-    }
-
-    override fun run() {
-        running.set(true)
         try {
-            val host = strNetworkIP
-
             val message = msgString.toByteArray()
 
             // Get the internet address of the specified host
-            val address = InetAddress.getByName(host)
+            val address = InetAddress.getByName(strNetworkIP)
 
             // Initialize a datagram packet with data and address
             val packet = DatagramPacket(
@@ -60,16 +45,11 @@ class Client(
                 address, port
             )
 
-            // Create a datagram socket, send the packet through it, close it.
-            val wifi = context.getSystemService(Context.WIFI_SERVICE) as WifiManager
-            val lock = wifi.createMulticastLock("lock")
-            lock.acquire()
-
-            val dsocket = DatagramSocket()
-            dsocket.send(packet)
-            dsocket.close()
-
-            lock.release()
+            if (dsocket == null || dsocket!!.isClosed) {
+                dsocket = DatagramSocket()
+                dsocket!!.broadcast = true
+            }
+            dsocket!!.send(packet)
 
             println("Sent")
         } catch (e: Exception) {
